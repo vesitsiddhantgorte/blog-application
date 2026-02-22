@@ -1,5 +1,4 @@
-const { Schema, model} = require('mongoose')
-const { applyTimestamps } = require( './user' )
+const { Schema, model } = require('mongoose')
 
 const blogSchema = new Schema({
     title: { 
@@ -18,6 +17,27 @@ const blogSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
+    summary: {
+        type: String,
+        default: '',
+    },
+    status: {
+        type: String,
+        enum: ['draft', 'scheduled', 'published'],
+        default: 'draft',
+    },
+    scheduledPublishAt: {
+        type: Date,
+        default: null,
+    },
+    publishedAt: {
+        type: Date,
+        default: null,
+    },
+    recommendations: [{
+        type: Schema.Types.ObjectId,
+        ref: 'blog',
+    }],
 }, { timestamps : true}
 )
 

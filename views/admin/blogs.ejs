@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+    <title>Admin — Blogs</title>
+    <style>
+        .admin-sidebar { min-height: calc(100vh - 72px); background: #1e293b; }
+        .sidebar-link { color: #cbd5e1; text-decoration: none; display: block; padding: 10px 20px; border-radius: 8px; font-size: 1rem; }
+        .sidebar-link:hover, .sidebar-link.active { background: #334155; color: #fff; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/nav') %>
+
+    <div class="d-flex" style="min-height: calc(100vh - 72px);">
+        <!-- Sidebar -->
+        <div class="admin-sidebar p-3" style="width: 220px; flex-shrink:0;">
+            <div class="text-white fw-bold mb-4 mt-2 ps-2" style="font-size:1.1rem;">⚙️ Admin Panel</div>
+            <a href="/admin" class="sidebar-link">🏠 Dashboard</a>
+            <a href="/admin/users" class="sidebar-link mt-1">👥 Users</a>
+            <a href="/admin/blogs" class="sidebar-link active mt-1">📝 Blogs</a>
+            <a href="/" class="sidebar-link mt-4" style="color:#94a3b8;">← Back to Site</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-fill p-4">
+            <h3 class="fw-bold mb-4">All Blogs <span class="badge bg-secondary fs-6"><%= blogs.length %></span></h3>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Cover</th>
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Change Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% blogs.forEach(b => { %>
+                            <tr>
+                                <td>
+                                    <% if (b.coverImageURL) { %>
+                                        <img src="<%= b.coverImageURL %>" width="56" height="40" style="object-fit:cover;border-radius:6px;" alt="cover">
+                                    <% } else { %>
+                                        <div style="width:56px;height:40px;background:#e2e8f0;border-radius:6px;"></div>
+                                    <% } %>
+                                </td>
+                                <td class="fw-semibold" style="max-width:180px;">
+                                    <a href="/blog/<%= b._id %>" class="text-decoration-none text-dark">
+                                        <%= b.title.slice(0, 30) %><%= b.title.length > 30 ? '...' : '' %>
+                                    </a>
+                                </td>
+                                <td class="text-muted small"><%= b.createdBy ? b.createdBy.fullName : 'N/A' %></td>
+                                <td>
+                                    <% if (b.status === 'published') { %>
+                                        <span class="badge bg-success">Published</span>
+                                    <% } else if (b.status === 'draft') { %>
+                                        <span class="badge bg-warning text-dark">Draft</span>
+                                    <% } else { %>
+                                        <span class="badge bg-info text-dark">Scheduled</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-muted small"><%= new Date(b.createdAt).toLocaleDateString() %></td>
+                                <td>
+                                    <form action="/admin/blogs/<%= b._id %>/status" method="post" class="d-flex gap-1">
+                                        <select name="status" class="form-select form-select-sm" style="width:120px;">
+                                            <option value="draft" <% if (b.status === 'draft') { %>selected<% } %>>Draft</option>
+                                            <option value="published" <% if (b.status === 'published') { %>selected<% } %>>Published</option>
+                                            <option value="scheduled" <% if (b.status === 'scheduled') { %>selected<% } %>>Scheduled</option>
+                                        </select>
+                                        <button class="btn btn-primary btn-sm" type="submit">Save</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <a href="/blog/edit/<%= b._id %>" class="btn btn-warning btn-sm">Edit</a>
+                                        <form action="/admin/blogs/<%= b._id %>/delete" method="post" onsubmit="return confirm('Delete this blog permanently?')">
+                                            <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/scripts') %>
+</body>
+</html>

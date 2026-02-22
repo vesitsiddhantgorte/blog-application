@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+    <title>Admin — Users</title>
+    <style>
+        .admin-sidebar { min-height: calc(100vh - 72px); background: #1e293b; }
+        .sidebar-link { color: #cbd5e1; text-decoration: none; display: block; padding: 10px 20px; border-radius: 8px; font-size: 1rem; }
+        .sidebar-link:hover, .sidebar-link.active { background: #334155; color: #fff; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/nav') %>
+
+    <div class="d-flex" style="min-height: calc(100vh - 72px);">
+        <!-- Sidebar -->
+        <div class="admin-sidebar p-3" style="width: 220px; flex-shrink:0;">
+            <div class="text-white fw-bold mb-4 mt-2 ps-2" style="font-size:1.1rem;">⚙️ Admin Panel</div>
+            <a href="/admin" class="sidebar-link">🏠 Dashboard</a>
+            <a href="/admin/users" class="sidebar-link active mt-1">👥 Users</a>
+            <a href="/admin/blogs" class="sidebar-link mt-1">📝 Blogs</a>
+            <a href="/" class="sidebar-link mt-4" style="color:#94a3b8;">← Back to Site</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-fill p-4">
+            <h3 class="fw-bold mb-4">All Users <span class="badge bg-secondary fs-6"><%= users.length %></span></h3>
+
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Avatar</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Joined</th>
+                                <th>Change Role</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% users.forEach(u => { %>
+                            <tr>
+                                <td>
+                                    <img src="<%= u.profileImageURL || '/images/default.jpeg' %>" width="38" height="38" class="rounded-circle" style="object-fit:cover;" alt="avatar">
+                                </td>
+                                <td class="fw-semibold"><%= u.fullName %></td>
+                                <td class="text-muted"><%= u.email %></td>
+                                <td>
+                                    <% if (u.role === 'ADMIN') { %>
+                                        <span class="badge bg-danger">ADMIN</span>
+                                    <% } else { %>
+                                        <span class="badge bg-secondary">USER</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-muted small"><%= new Date(u.createdAt).toLocaleDateString() %></td>
+                                <td>
+                                    <% if (u._id.toString() !== user._id.toString()) { %>
+                                    <form action="/admin/users/<%= u._id %>/role" method="post" class="d-flex gap-1">
+                                        <select name="role" class="form-select form-select-sm" style="width:100px;">
+                                            <option value="USER" <% if (u.role === 'USER') { %>selected<% } %>>USER</option>
+                                            <option value="ADMIN" <% if (u.role === 'ADMIN') { %>selected<% } %>>ADMIN</option>
+                                        </select>
+                                        <button class="btn btn-primary btn-sm" type="submit">Save</button>
+                                    </form>
+                                    <% } else { %>
+                                    <span class="text-muted small">You</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (u._id.toString() !== user._id.toString()) { %>
+                                    <form action="/admin/users/<%= u._id %>/delete" method="post" onsubmit="return confirm('Delete user <%= u.fullName %> and all their blogs?')">
+                                        <button class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    <% } else { %>
+                                    <span class="text-muted small">—</span>
+                                    <% } %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/scripts') %>
+</body>
+</html>

@@ -3,32 +3,61 @@
 
 <head>
     <%- include('./partials/head') %>
-        <title>Add New Blog</title>
+    <title>Add New Blog</title>
 </head>
 
 <body>
     <%- include('./partials/nav') %>
 
-        <div class="container mt-3">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: calc(100vh - 160px);">
+        <div class="card p-4 shadow" style="max-width: 560px; width:100%;">
+            <h2 class="mb-4 text-center">Add New Blog</h2>
             <form action="/blog" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
                     <label for="coverImage" class="form-label">Cover Image</label>
-                    <input type="file" class="form-control" id="coverImage" name="coverImage" aria-describedby="coverImage">
+                    <input type="file" class="form-control" id="coverImage" name="coverImage">
                 </div>
                 <div class="mb-3">
                     <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" name="title" aria-describedby="title">
+                    <input type="text" class="form-control" id="title" name="title" required>
                 </div>
                 <div class="mb-3">
-                    <label for="body">Body</label>
-                    <textarea name="body" class="form-control" id="body"></textarea>
+                    <label for="body" class="form-label">Body</label>
+                    <textarea name="body" class="form-control" id="body" rows="6" required></textarea>
                 </div>
-                <div>
-                    <button class="btn btn-primary">Submit</button>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-control" name="status" id="status">
+                        <option value="draft">Draft</option>
+                        <option value="published">Publish Now</option>
+                        <option value="scheduled">Schedule</option>
+                    </select>
                 </div>
-        </form>
+                <div class="mb-3" id="scheduleTimeDiv" style="display:none;">
+                    <label for="scheduledPublishAt" class="form-label">Schedule Publish Time</label>
+                    <input type="datetime-local" class="form-control" name="scheduledPublishAt" id="scheduledPublishAt">
+                </div>
+                <button class="btn btn-primary w-100">Submit</button>
+            </form>
         </div>
-        <%- include('./partials/scripts') %>
+    </div>
+
+    <%- include('./partials/scripts') %>
+    <script>
+        document.getElementById('status').addEventListener('change', function () {
+            document.getElementById('scheduleTimeDiv').style.display =
+                this.value === 'scheduled' ? 'block' : 'none';
+        });
+    </script>
+    <footer>
+        <div>Blogify &copy; 2026. Crafted with ❤️ by you.</div>
+    </footer>
+</body>
+
+</html>
+                <footer>
+                    <div>Blogify &copy; 2026. Crafted with ❤️ by you.</div>
+                </footer>
 </body>
 
 </html>

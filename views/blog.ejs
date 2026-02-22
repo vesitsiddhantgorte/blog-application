@@ -3,48 +3,105 @@
 
 <head>
     <%- include('./partials/head') %>
-        <title>Blog</title>
+    <title>Blog</title>
 </head>
 
 <body>
     <%- include('./partials/nav') %>
 
-        <div class="container mt-4 ">
-            <h1>
-                <%= blog.title %>
-            </h1>
-            <img src="<%= blog.coverImageURL %>" width="700px">
-            <p class="mt-3">
-                <%= blog.body %>
-            </p>
-        </div>
-
-        <div class="container mt-4 ">
-            <img src="<%= blog.createdBy.profileImageURL %>" width="50px">
-            <%= blog.createdBy.fullName %>
-        </div>
-
-        <div class="container mt-3">
-            <h1>Comments <%= comments.length %></h1>
-            <% if (locals.user) { %>
-             <form action="/blog/comment/<%= blog._id %>" method="post">
-                <div class="mb-3">
-                    <input type="text" name="content" class="form-control" placeholder="Enter your comment">
-                    <button class="btn btn-primary mt-3" type="submit">Add</button>
-                </div>
-            </form>
-            <% } %>
-            <div class="mt-3">
-                <% comments.forEach(comment => { %>
-                 <div>
-                    <img src="<%= comment.createdBy.profileImageURL %>" width="50px"><%= comment.createdBy.fullName %>
-                    <pre><%= comment.content %></pre>
-                 </div>
-                <% }) %>
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+            <h1 class="mb-0"><%= blog.title %></h1>
+            <div class="d-flex align-items-center gap-2">
+                <% if (blog.status === 'draft') { %>
+                    <span class="badge bg-warning text-dark fs-6">Draft</span>
+                <% } else if (blog.status === 'scheduled') { %>
+                    <span class="badge bg-info text-dark fs-6">Scheduled</span>
+                <% } else { %>
+                    <span class="badge bg-success fs-6">Published</span>
+                <% } %>
+                <% if (locals.user && blog.createdBy && blog.createdBy._id.toString() === user._id.toString()) { %>
+                    <a href="/blog/edit/<%= blog._id %>" class="btn btn-warning btn-sm">Edit</a>
+                <% } %>
             </div>
         </div>
 
-        <%- include('./partials/scripts') %>
+        <% if (blog.status === 'scheduled' && blog.scheduledPublishAt) { %>
+            <p class="text-info mb-2"><i>Scheduled to publish at: <%= new Date(blog.scheduledPublishAt).toLocaleString() %></i></p>
+        <% } %>
+
+        <% if (blog.coverImageURL) { %>
+            <img src="<%= blog.coverImageURL %>" class="img-fluid rounded mb-3" style="max-height:420px;width:100%;object-fit:cover;" alt="cover">
+        <% } %>
+
+        <% if (blog.summary) { %>
+        <div class="alert alert-secondary py-2 mb-3">
+            <strong>Summary:</strong> <%= blog.summary %>
+        </div>
+        <% } %>
+
+        <div class="card p-4 mb-4">
+            <p style="white-space:pre-wrap;"><%= blog.body %></p>
+        </div>
+
+        <div class="d-flex align-items-center mb-4">
+            <img src="<%= blog.createdBy.profileImageURL %>" width="48" height="48" class="rounded-circle me-3" style="object-fit:cover;" alt="author">
+            <div>
+                <div class="fw-bold"><%= blog.createdBy.fullName %></div>
+                <% if (blog.publishedAt) { %>
+                    <div class="text-muted small">Published <%= new Date(blog.publishedAt).toLocaleDateString() %></div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Posts -->
+    <% if (blog.recommendations && blog.recommendations.length > 0) { %>
+    <div class="container mb-4">
+        <h4 class="mb-3">Related Posts</h4>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            <% blog.recommendations.forEach(function(rec) { %>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title"><%= rec.title %></h6>
+                        <a href="/blog/<%= rec._id %>" class="btn btn-outline-primary btn-sm">Read</a>
+                    </div>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+    <% } %>
+
+    <!-- Comments -->
+    <div class="container mb-5">
+        <h4 class="mb-3">Comments <span class="badge bg-secondary"><%= comments.length %></span></h4>
+        <% if (locals.user) { %>
+        <form action="/blog/comment/<%= blog._id %>" method="post" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="content" class="form-control" placeholder="Write a comment...">
+                <button class="btn btn-primary" type="submit">Post</button>
+            </div>
+        </form>
+        <% } %>
+        <div>
+            <% comments.forEach(comment => { %>
+            <div class="d-flex align-items-start mb-3">
+                <img src="<%= comment.createdBy.profileImageURL %>" width="40" height="40" class="rounded-circle me-3" style="object-fit:cover;" alt="commenter">
+                <div class="card flex-fill p-3">
+                    <div class="fw-bold mb-1"><%= comment.createdBy.fullName %></div>
+                    <p class="mb-0"><%= comment.content %></p>
+                </div>
+            </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <%- include('./partials/scripts') %>
+    <footer>
+        <div>Blogify &copy; 2026. Crafted with ❤️ by you.</div>
+    </footer>
 </body>
 
 </html>

@@ -1,1 +1,33 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+<script>
+// Set username in localStorage after signup
+if (window.location.pathname === '/user/signup') {
+	document.querySelector('form').addEventListener('submit', function(e) {
+		const name = document.getElementById('fullName').value;
+		localStorage.setItem('username', name);
+	});
+}
+
+// Set username in localStorage after signin
+if (window.location.pathname === '/user/signin') {
+	document.querySelector('form').addEventListener('submit', function(e) {
+		// You may want to fetch username from server after login, but for demo, clear username
+		localStorage.removeItem('username');
+	});
+}
+
+// Clear username on logout
+if (window.location.pathname === '/user/logout') {
+	localStorage.removeItem('username');
+}
+
+// Show username from localStorage in navbar
+window.addEventListener('DOMContentLoaded', function() {
+	var username = localStorage.getItem('username');
+	var span = document.getElementById('navbar-username');
+	if (span && username) {
+		span.textContent = username;
+	}
+});
+</script>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head') %>
+    <title>Admin Dashboard</title>
+    <style>
+        .stat-card { border-radius: 14px; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-3px); }
+        .admin-sidebar { min-height: calc(100vh - 72px); background: #1e293b; }
+        .sidebar-link { color: #cbd5e1; text-decoration: none; display: block; padding: 10px 20px; border-radius: 8px; font-size: 1rem; }
+        .sidebar-link:hover, .sidebar-link.active { background: #334155; color: #fff; }
+        .admin-content { background: transparent; }
+    </style>
+</head>
+<body>
+    <%- include('../partials/nav') %>
+
+    <div class="d-flex" style="min-height: calc(100vh - 72px);">
+        <!-- Sidebar -->
+        <div class="admin-sidebar p-3" style="width: 220px; flex-shrink:0;">
+            <div class="text-white fw-bold mb-4 mt-2 ps-2" style="font-size:1.1rem;">⚙️ Admin Panel</div>
+            <a href="/admin" class="sidebar-link active">🏠 Dashboard</a>
+            <a href="/admin/users" class="sidebar-link mt-1">👥 Users</a>
+            <a href="/admin/blogs" class="sidebar-link mt-1">📝 Blogs</a>
+            <a href="/" class="sidebar-link mt-4" style="color:#94a3b8;">← Back to Site</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-content flex-fill p-4">
+            <h3 class="fw-bold mb-4">Dashboard</h3>
+
+            <!-- Stats Row -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card stat-card text-center p-3 bg-primary text-white">
+                        <div style="font-size:2rem;" class="fw-bold"><%= stats.totalUsers %></div>
+                        <div class="small">Total Users</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card stat-card text-center p-3 bg-dark text-white">
+                        <div style="font-size:2rem;" class="fw-bold"><%= stats.totalBlogs %></div>
+                        <div class="small">Total Blogs</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card stat-card text-center p-3 bg-success text-white">
+                        <div style="font-size:2rem;" class="fw-bold"><%= stats.published %></div>
+                        <div class="small">Published</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card stat-card text-center p-3 bg-warning text-dark">
+                        <div style="font-size:2rem;" class="fw-bold"><%= stats.drafts %></div>
+                        <div class="small">Drafts</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-lg-2">
+                    <div class="card stat-card text-center p-3 bg-info text-dark">
+                        <div style="font-size:2rem;" class="fw-bold"><%= stats.scheduled %></div>
+                        <div class="small">Scheduled</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Recent Blogs -->
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h6 class="fw-bold mb-3">Recent Blogs</h6>
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>Title</th><th>Author</th><th>Status</th></tr></thead>
+                            <tbody>
+                                <% recentBlogs.forEach(b => { %>
+                                <tr>
+                                    <td><a href="/blog/<%= b._id %>"><%= b.title.slice(0,25) %><%= b.title.length > 25 ? '...' : '' %></a></td>
+                                    <td class="text-muted small"><%= b.createdBy ? b.createdBy.fullName : 'N/A' %></td>
+                                    <td>
+                                        <% if (b.status === 'published') { %><span class="badge bg-success">Published</span>
+                                        <% } else if (b.status === 'draft') { %><span class="badge bg-warning text-dark">Draft</span>
+                                        <% } else { %><span class="badge bg-info text-dark">Scheduled</span><% } %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                        <a href="/admin/blogs" class="btn btn-outline-primary btn-sm mt-3">View All Blogs</a>
+                    </div>
+                </div>
+
+                <!-- Recent Users -->
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h6 class="fw-bold mb-3">Recent Users</h6>
+                        <table class="table table-sm mb-0">
+                            <thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead>
+                            <tbody>
+                                <% recentUsers.forEach(u => { %>
+                                <tr>
+                                    <td><%= u.fullName %></td>
+                                    <td class="text-muted small"><%= u.email %></td>
+                                    <td>
+                                        <% if (u.role === 'ADMIN') { %><span class="badge bg-danger">Admin</span>
+                                        <% } else { %><span class="badge bg-secondary">User</span><% } %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                        <a href="/admin/users" class="btn btn-outline-primary btn-sm mt-3">View All Users</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/scripts') %>
+</body>
+</html>
