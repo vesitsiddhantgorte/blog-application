@@ -1,22 +1,22 @@
 pipeline {
-    agent { label 'linux' }
+    agent any
 
     stages {
         stage('Clone') {
             steps {
-                git 'https://github.com/siddhantgorte/blog_application.git'
+                git branch: 'main', url: 'https://github.com/siddhantgorte/blog_application.git'
             }
         }
 
         stage('Install') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
     }
